@@ -1,260 +1,197 @@
 <!DOCTYPE html>
 <html lang="uz">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Техника Сервис</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <div class="nav">
-      <button class="active" onclick="nav('omborxona',this)">📦 Омбор</button>
-      <button onclick="nav('skaaner',this)">🔍 Сканер</button>
-      <button onclick="nav('royhati',this)">📋 Рўйхат</button>
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Техника Сервис</title>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<div class="nav">
+  <button class="active" onclick="showNav('omborxona',this)">📦 Омбор</button>
+  <button onclick="showNav('skaaner',this)">🔍 Сканер</button>
+  <button onclick="showNav('royhati',this)">📋 Рўйхат</button>
+</div>
+
+<!-- ОМБОР -->
+<div id="page-omborxona" class="page active">
+  <p class="section-title" style="padding-top:4px">Янги техника қўшиш</p>
+  <div class="card">
+    <span class="flbl">1. Товар штрих коди</span>
+    <input id="a-code" type="text" placeholder="масалан: 8806090123456"/>
+
+    <span class="flbl">2. Бренд</span>
+    <input id="a-brand" type="text" placeholder="Бош ҳарф ёзинг: S→Samsung, L→LG ..." list="brand-list" autocomplete="off"/>
+    <datalist id="brand-list">
+      <option value="Бошқа">
+      <option value="Artel"><option value="Orient"><option value="Goodwell">
+      <option value="Hofmann"><option value="Ideal"><option value="Imzo">
+      <option value="Kayra"><option value="Lider"><option value="Milliy">
+      <option value="Texno"><option value="Turkiston"><option value="Zamin">
+      <option value="Samsung"><option value="LG"><option value="Ariston">
+      <option value="Bosch"><option value="Beko"><option value="Haier">
+      <option value="Hisense"><option value="Hitachi"><option value="Indesit">
+      <option value="Midea"><option value="Miele"><option value="Panasonic">
+      <option value="Philips"><option value="Sharp"><option value="Siemens">
+      <option value="Sony"><option value="Toshiba"><option value="Vestel">
+      <option value="Whirlpool"><option value="Zanussi"><option value="Electrolux">
+      <option value="AEG"><option value="Candy"><option value="Daewoo">
+      <option value="Daikin"><option value="Delonghi"><option value="Gorenje">
+      <option value="Gree"><option value="Hotpoint"><option value="Kenwood">
+      <option value="Liebherr"><option value="Neff"><option value="Smeg">
+      <option value="TCL"><option value="Tefal"><option value="Vitek">
+      <option value="Xiaomi"><option value="Zanussi">
+    </datalist>
+
+    <span class="flbl">3. Техника номи</span>
+    <input id="a-name" type="text" placeholder="масалан: Холодильник, Кир ювиш машинаси"/>
+
+    <span class="flbl">4. Модели</span>
+    <input id="a-model" type="text" placeholder="масалан: RF50K5961DP"/>
+
+    <div class="divider"></div>
+
+    <span class="flbl">5. Қаердан келган</span>
+    <select id="a-source-type" onchange="togglePhone()">
+      <option value="">— Танланг —</option>
+      <option value="baza">🏪 База магазинлардан</option>
+      <option value="diler">🏬 Дистрибьютор дўконлардан</option>
+      <option value="mijoz">👤 Ташқи мижоздан</option>
+    </select>
+
+    <span class="flbl">6. Магазин ёки мижоз номи</span>
+    <input id="a-source" type="text" placeholder="масалан: Texno Market, Алишер"/>
+
+    <span class="flbl">7. Манзил (адрес)</span>
+    <input id="a-address" type="text" placeholder="масалан: Чилонзор 5-кўча 12-уй"/>
+
+    <span class="flbl">8. Телефон рақами</span>
+    <input id="a-phone" type="tel" placeholder="+998 90 123 45 67"/>
+
+    <div class="divider"></div>
+
+    <span class="flbl">9. Мижоз айтган носозлик</span>
+    <textarea id="a-fault" placeholder="Техника қандай носозлик билан келди..."></textarea>
+
+    <span class="flbl">10. Кириш санаси</span>
+    <input id="a-date" type="date"/>
+
+    <span class="flbl">11. Нархи (сўм)</span>
+    <input id="a-price" type="number" placeholder="масалан: 3200000"/>
+
+    <span class="flbl">12. Жорий ҳолати</span>
+    <select id="a-status">
+      <option value="qabul">📥 Қабул қилинди</option>
+      <option value="diag">🔬 Диагностикада</option>
+      <option value="ehtiyot">🔩 Эҳтиёт қисм кутиляпти</option>
+      <option value="repair">🔧 Таъмирланмоқда</option>
+      <option value="ok">✅ Ишлаяпти</option>
+      <option value="bad">❌ Бузилган</option>
+      <option value="zavod">🏭 Заводга қайтарилади</option>
+      <option value="hisobdan">🗑️ Ҳисобдан чиқарилади</option>
+    </select>
+
+    <button class="btn btn-primary" id="add-btn" onclick="addDevice()">+ Қўшиш ва QR ясаш</button>
+    <div id="add-msg"></div>
+  </div>
+
+  <div id="qr-wrap" style="display:none">
+    <div class="card" style="text-align:center">
+      <p style="font-weight:700;font-size:15px" id="qr-title"></p>
+      <p style="font-size:13px;color:#666;margin:3px 0" id="qr-model"></p>
+      <p style="font-size:12px;color:#888;margin-bottom:12px" id="qr-idlbl"></p>
+      <img id="qr-img" width="210" height="210" alt="QR" style="display:block;margin:0 auto;border-radius:8px;border:1px solid #eee"/>
+      <p style="font-size:12px;color:#888;margin-top:12px">📸 Скриншот олиб чоп этинг ва техникага ёпиштиринг</p>
     </div>
+  </div>
+</div>
 
-    <!-- ОМБОР -->
-    <div id="page-omborxona" class="page active">
-      <div style="padding-top: 4px">
-        <p class="section-title">Янги техника қўшиш</p>
-        <div class="card">
-          <span class="flbl">1. Товар штрих коди</span>
-          <input id="a-code" type="text" placeholder="масалан: 8806090123456" />
+<!-- СКАНЕР -->
+<div id="page-skaaner" class="page">
+  <p class="section-title" style="padding-top:4px">QR сканер</p>
+  <div class="card">
+    <span class="flbl">Техника ID рақамини киритинг</span>
+    <input id="s-id" type="text" placeholder="масалан: 0000000001"/>
+    <button class="btn btn-primary" onclick="scanDev()">🔍 Қидириш</button>
+  </div>
+  <div id="scan-result"></div>
+</div>
 
-          <span class="flbl">2. Бренд</span>
-          <input
-            id="a-brand"
-            type="text"
-            placeholder="Бош ҳарф ёзинг (S, L, B...)"
-            list="brand-list"
-            autocomplete="off"
-            oninput="this.value=this.value.charAt(0).toUpperCase()+this.value.slice(1)"
-          />
+<!-- РЎЙХАТ -->
+<div id="page-royhati" class="page">
+  <div style="display:flex;justify-content:space-between;align-items:center;padding-top:4px;margin-bottom:8px">
+    <p class="section-title" style="margin-bottom:0">Барча техникалар</p>
+    <button class="btn" style="width:auto;padding:7px 14px;font-size:12px;background:#178060;color:#fff;border-color:#178060" onclick="exportExcel()">📥 Excel</button>
+  </div>
+  <div id="list-cont"><div class="spinner">⏳ Юкланмоқда...</div></div>
+</div>
 
-          <span class="flbl">3. Техника номи</span>
-          <input
-            id="a-name"
-            type="text"
-            placeholder="масалан: Холодильник, Кир ювиш машинаси"
-          />
-
-          <span class="flbl">4. Модели</span>
-          <input id="a-model" type="text" placeholder="масалан: RF50K5961DP" />
-
-          <div class="divider"></div>
-
-          <span class="flbl">5. Қаердан келган</span>
-          <select id="a-source-type" onchange="toggleSourceDetail()">
-            <option value="">— Танланг —</option>
-            <option value="baza">🏪 База магазинлардан</option>
-            <option value="diler">🏬 Дистрибьютор дўконлардан</option>
-            <option value="mijoz">👤 Ташқи мижоздан</option>
-          </select>
-
-          <span class="flbl">6. Магазин ёки мижоз номи</span>
-          <input
-            id="a-source"
-            type="text"
-            placeholder="масалан: Texno Market, Алишер"
-          />
-
-          <span class="flbl">7. Манзил (адрес)</span>
-          <input
-            id="a-address"
-            type="text"
-            placeholder="масалан: Чилонзор 5-кўча 12-уй"
-          />
-
-          <span class="flbl">8. Телефон рақами</span>
-          <input
-            id="a-source-phone"
-            type="tel"
-            placeholder="масалан: +998 90 123 45 67"
-          />
-
-          <span class="flbl">9. Мижоз айтган носозлик</span>
-          <textarea
-            id="a-fault"
-            placeholder="масалан: Совутмаяпти, шовқин қиляпти..."
-          ></textarea>
-
-          <span class="flbl">10. Кириш санаси</span>
-          <input id="a-date" type="date" />
-          <script>
-            document.getElementById("a-date").value = new Date()
-              .toISOString()
-              .slice(0, 10);
-          </script>
-
-          <span class="flbl">11. Нархи (сўм)</span>
-          <input id="a-price" type="number" placeholder="масалан: 3200000" />
-
-          <span class="flbl">12. Жорий ҳолати</span>
-          <select id="a-status">
-            <option value="ok">✅ Ишлаяпти</option>
-            <option value="qabul">📥 Қабул қилинди</option>
-            <option value="diag">🔬 Диагностикада</option>
-            <option value="zapchast">⏳ Запчаст кутилмоқда</option>
-            <option value="ehtiyot">🔩 Эҳтиёт қисм кутиляпти</option>
-            <option value="repair">🔧 Таъмирланмоқда</option>
-            <option value="bad">❌ Бузилган</option>
-            <option value="zavod">🏭 Заводга қайтарилади</option>
-            <option value="hisobdan">🗑️ Ҳисобдан чиқарилади</option>
-          </select>
-
-          <button class="btn btn-primary" id="add-btn" onclick="addDevice()">
-            + Қўшиш ва QR ясаш
-          </button>
-          <div id="add-msg"></div>
-        </div>
-
-        <div id="qr-wrap" style="display: none">
-          <div class="card" style="text-align: center">
-            <p
-              style="font-weight: 700; font-size: 15px; margin-bottom: 2px"
-              id="qr-brand"
-            ></p>
-            <p
-              style="font-size: 13px; color: #666; margin-bottom: 2px"
-              id="qr-name"
-            ></p>
-            <p
-              style="font-size: 12px; color: #888; margin-bottom: 12px"
-              id="qr-id"
-            ></p>
-            <img
-              id="qr-img"
-              width="200"
-              height="200"
-              alt="QR kod"
-              style="
-                display: block;
-                margin: 0 auto;
-                border: 1px solid #eee;
-                border-radius: 8px;
-              "
-            />
-            <p style="font-size: 12px; color: #888; margin-top: 12px">
-              📸 Скриншот олиб чоп этинг ва техникага ёпиштиринг
-            </p>
-          </div>
-        </div>
-      </div>
+<!-- ТАЪМИР МОДАЛ -->
+<div class="modal-overlay" id="repair-modal">
+  <div class="modal-box">
+    <p style="font-weight:700;font-size:16px;margin-bottom:14px">🔧 Таъмир баёни</p>
+    <span class="flbl">Нима қилинди?</span>
+    <textarea id="r-note" placeholder="Таъмир тафсилоти..."></textarea>
+    <span class="flbl">Нарх (сўм, ихтиёрий)</span>
+    <input id="r-cost" type="number" placeholder="масалан: 150000"/>
+    <span class="flbl">Натижа / Янги ҳолат</span>
+    <select id="r-status">
+      <option value="qabul">📥 Қабул қилинди</option>
+      <option value="diag">🔬 Диагностикада</option>
+      <option value="ehtiyot">🔩 Эҳтиёт қисм кутиляпти</option>
+      <option value="repair">🔧 Таъмирланмоқда</option>
+      <option value="ok">✅ Тузатилди — ишлаяпти</option>
+      <option value="bad">❌ Бузилган</option>
+      <option value="zavod">🏭 Заводга қайтарилади</option>
+      <option value="hisobdan">🗑️ Ҳисобдан чиқарилади</option>
+    </select>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn" onclick="closeModal('repair-modal')">Бекор</button>
+      <button class="btn btn-primary" onclick="saveRepair()">💾 Сақлаш</button>
     </div>
+  </div>
+</div>
 
-    <!-- СКАНЕР -->
-    <div id="page-skaaner" class="page">
-      <div style="padding-top: 4px">
-        <p class="section-title">QR сканер</p>
-        <div class="card">
-          <span class="flbl">Техника ID рақамини киритинг</span>
-          <input
-            id="s-id"
-            type="text"
-            placeholder="масалан: 0000000001"
-            style="text-transform: uppercase"
-          />
-          <button class="btn btn-primary" onclick="scanDev()">
-            🔍 Қидириш
-          </button>
-        </div>
-        <div id="scan-result"></div>
-      </div>
+<!-- ТАҲРИР МОДАЛ -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal-box">
+    <p style="font-weight:700;font-size:16px;margin-bottom:14px">✏️ Маълумотни ўзгартириш</p>
+    <span class="flbl">Товар штрих коди</span><input id="e-code" type="text"/>
+    <span class="flbl">Бренд</span><input id="e-brand" type="text" list="brand-list"/>
+    <span class="flbl">Техника номи</span><input id="e-name" type="text"/>
+    <span class="flbl">Модели</span><input id="e-model" type="text"/>
+    <span class="flbl">Қаердан келган</span>
+    <select id="e-source-type">
+      <option value="">— Танланг —</option>
+      <option value="baza">🏪 База магазинлардан</option>
+      <option value="diler">🏬 Дистрибьютор дўконлардан</option>
+      <option value="mijoz">👤 Ташқи мижоздан</option>
+    </select>
+    <span class="flbl">Магазин / Мижоз номи</span><input id="e-source" type="text"/>
+    <span class="flbl">Манзил</span><input id="e-address" type="text"/>
+    <span class="flbl">Телефон</span><input id="e-phone" type="tel"/>
+    <span class="flbl">Мижоз айтган носозлик</span><textarea id="e-fault"></textarea>
+    <span class="flbl">Кириш санаси</span><input id="e-date" type="date"/>
+    <span class="flbl">Нархи (сўм)</span><input id="e-price" type="number"/>
+    <span class="flbl">Жорий ҳолати</span>
+    <select id="e-status">
+      <option value="qabul">📥 Қабул қилинди</option>
+      <option value="diag">🔬 Диагностикада</option>
+      <option value="ehtiyot">🔩 Эҳтиёт қисм кутиляпти</option>
+      <option value="repair">🔧 Таъмирланмоқда</option>
+      <option value="ok">✅ Ишлаяпти</option>
+      <option value="bad">❌ Бузилган</option>
+      <option value="zavod">🏭 Заводга қайтарилади</option>
+      <option value="hisobdan">🗑️ Ҳисобдан чиқарилади</option>
+    </select>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn" onclick="closeModal('edit-modal')">Бекор</button>
+      <button class="btn btn-primary" onclick="saveEdit()">💾 Сақлаш</button>
     </div>
+  </div>
+</div>
 
-    <!-- РЎЙХАТ -->
-    <div id="page-royhati" class="page">
-      <div style="padding-top: 4px">
-        <p class="section-title">Барча техникалар</p>
-        <div id="list-cont"><div class="spinner">⏳ Юкланмоқда...</div></div>
-      </div>
-    </div>
-
-    <!-- ТАЪМИР МОДАЛ -->
-    <div class="modal-overlay" id="repair-modal">
-      <div class="modal-box">
-        <p style="font-weight: 700; font-size: 16px; margin-bottom: 14px">
-          🔧 Таъмир баёни
-        </p>
-        <span class="flbl">Нима қилинди?</span>
-        <textarea id="r-note" placeholder="Таъмир тафсилоти..."></textarea>
-        <span class="flbl">Нарх (сўм, ихтиёрий)</span>
-        <input id="r-cost" type="number" placeholder="масалан: 150000" />
-        <span class="flbl">Натижа</span>
-        <select id="r-status">
-          <option value="ok">✅ Тузатилди — ишлаяпти</option>
-          <option value="qabul">📥 Қабул қилинди</option>
-          <option value="diag">🔬 Диагностикада</option>
-          <option value="zapchast">⏳ Запчаст кутилмоқда</option>
-          <option value="ehtiyot">🔩 Эҳтиёт қисм кутиляпти</option>
-          <option value="repair">🔧 Таъмирланмоқда</option>
-          <option value="bad">❌ Бузилган</option>
-          <option value="zavod">🏭 Заводга қайтарилади</option>
-          <option value="hisobdan">🗑️ Ҳисобдан чиқарилади</option>
-        </select>
-        <div style="display: flex; gap: 8px; margin-top: 12px">
-          <button class="btn" onclick="closeModal()">Бекор</button>
-          <button class="btn btn-primary" onclick="saveRepair()">
-            💾 Сақлаш
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ТАҲРИР МОДАЛ -->
-    <div class="modal-overlay" id="edit-modal">
-      <div class="modal-box">
-        <p style="font-weight: 700; font-size: 16px; margin-bottom: 14px">
-          ✏️ Маълумотни ўзгартириш
-        </p>
-        <span class="flbl">Товар коди</span>
-        <input id="e-code" type="text" />
-        <span class="flbl">Бренд</span>
-        <input id="e-brand" type="text" list="brand-list" />
-        <span class="flbl">Техника номи ва модели</span>
-        <input id="e-name" type="text" />
-        <span class="flbl">Модели</span>
-        <input id="e-model" type="text" />
-        <span class="flbl">Қаердан келган</span>
-        <select id="e-source-type">
-          <option value="">— Танланг —</option>
-          <option value="baza">🏪 База магазинлардан</option>
-          <option value="diler">🏬 Дистрибьютор дўконлардан</option>
-          <option value="mijoz">👤 Ташқи мижоздан</option>
-        </select>
-        <span class="flbl">Магазин / Мижоз номи</span>
-        <input id="e-source" type="text" />
-        <span class="flbl">Манзил</span>
-        <input id="e-address" type="text" />
-        <span class="flbl">Телефон рақами</span>
-        <input id="e-source-phone" type="tel" />
-        <span class="flbl">Мижоз айтган носозлик</span>
-        <textarea id="e-fault"></textarea>
-        <span class="flbl">Кириш санаси</span>
-        <input id="e-date" type="date" />
-        <span class="flbl">Нархи (сўм)</span>
-        <input id="e-price" type="number" />
-        <span class="flbl">Жорий ҳолати</span>
-        <select id="e-status">
-          <option value="ok">✅ Ишлаяпти</option>
-          <option value="qabul">📥 Қабул қилинди</option>
-          <option value="diag">🔬 Диагностикада</option>
-          <option value="zapchast">⏳ Запчаст кутилмоқда</option>
-          <option value="ehtiyot">🔩 Эҳтиёт қисм кутиляпти</option>
-          <option value="repair">🔧 Таъмирланмоқда</option>
-          <option value="bad">❌ Бузилган</option>
-          <option value="zavod">🏭 Заводга қайтарилади</option>
-          <option value="hisobdan">🗑️ Ҳисобдан чиқарилади</option>
-        </select>
-        <div style="display: flex; gap: 8px; margin-top: 12px">
-          <button class="btn" onclick="closeEditModal()">Бекор</button>
-          <button class="btn btn-primary" onclick="saveEdit()">
-            💾 Сақлаш
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <script src="app.js"></script>
-  </body>
+<script src="app.js"></script>
+</body>
 </html>
