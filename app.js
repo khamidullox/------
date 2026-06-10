@@ -1,5 +1,5 @@
-var SUPA_URL = "https://zzfqisdtxgcvdnnqfrym.supabase.co";
-var SUPA_KEY = "sb_publishable_kQNelOL1x8_LvnWTEp5bOA_SBGVMI1y";
+var SUPA_URL = "https://gnyrtuhstyailttzinfa.supabase.co";
+var SUPA_KEY = "sb_publishable_ATAy-TCbwOmkEmqqSuyEIA_1_VUhkim";
 var currentDevId = null;
 
 // URL dan ID ni avtomatik o'qish
