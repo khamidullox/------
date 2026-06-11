@@ -5,6 +5,7 @@ var ADMIN_PASS = '1234';
 var adminOk = false;
 var currentDevId = null;
 var editDevId = null;
+var labelData = null;
 
 // Set today date
 document.getElementById('a-date').value = new Date().toISOString().slice(0,10);
@@ -84,6 +85,60 @@ function closeModal(id){
   document.getElementById(id).classList.remove('open');
 }
 
+// ---- THERMAL LABEL PRINT (58x40mm) ----
+function qrSrcFor(id){
+  return 'https://api.qrserver.com/v1/create-qr-code/?size=210x210&margin=10&data='
+    +encodeURIComponent(SITE_URL+'?id='+encodeURIComponent(id));
+}
+
+function escapeHtml(s){
+  return String(s==null?'':s).replace(/[&<>"]/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];
+  });
+}
+
+function printLabel(){
+  if(!labelData){ alert('Аввал техника қўшинг ёки очинг'); return; }
+  var L = labelData;
+  var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>label</title><style>'
+    +'@page{size:58mm 40mm;margin:0}'
+    +'*{margin:0;padding:0;box-sizing:border-box}'
+    +'html,body{width:58mm;height:40mm}'
+    +'body{font-family:Arial,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}'
+    +'.label{width:58mm;height:40mm;display:flex;align-items:center;padding:2mm;gap:2mm}'
+    +'.qr{width:30mm;height:30mm;flex:0 0 30mm}'
+    +'.qr img{width:100%;height:100%;display:block}'
+    +'.info{flex:1;min-width:0}'
+    +'.info .t{font-size:9pt;font-weight:700;line-height:1.15;margin-bottom:1.2mm;word-break:break-word}'
+    +'.info .m{font-size:7pt;margin-bottom:1mm;word-break:break-word}'
+    +'.info .id{font-size:9pt;font-weight:700;letter-spacing:.3px}'
+    +'.info .c{font-size:6.5pt;color:#333;margin-top:.5mm;word-break:break-word}'
+    +'</style></head><body><div class="label">'
+    +'<div class="qr"><img src="'+L.qrSrc+'"></div>'
+    +'<div class="info">'
+    +'<div class="t">'+escapeHtml(L.title)+'</div>'
+    +(L.model?'<div class="m">'+escapeHtml(L.model)+'</div>':'')
+    +'<div class="id">'+escapeHtml(L.id)+'</div>'
+    +(L.code?'<div class="c">'+escapeHtml(L.code)+'</div>':'')
+    +'</div></div></body></html>';
+
+  var ifr = document.getElementById('print-frame');
+  if(!ifr){
+    ifr = document.createElement('iframe');
+    ifr.id = 'print-frame';
+    ifr.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden';
+    document.body.appendChild(ifr);
+  }
+  var doc = ifr.contentWindow.document;
+  doc.open(); doc.write(html); doc.close();
+  var win = ifr.contentWindow;
+  var img = doc.querySelector('img');
+  var done = false;
+  function go(){ if(done) return; done=true; try{ win.focus(); win.print(); }catch(e){ alert('Принтер хатоси: '+e.message); } }
+  if(img && !img.complete){ img.onload=go; img.onerror=go; setTimeout(go, 3000); }
+  else { setTimeout(go, 200); }
+}
+
 // ---- ADD DEVICE ----
 async function genNextId(){
   try{
@@ -125,13 +180,13 @@ async function addDevice(){
     await supaFetch('devices','POST',dev);
 
     // Generate QR with full URL
-    var qrLink = SITE_URL+'?id='+encodeURIComponent(id);
-    var qrSrc  = 'https://api.qrserver.com/v1/create-qr-code/?size=210x210&margin=10&data='+encodeURIComponent(qrLink);
+    var qrSrc  = qrSrcFor(id);
     document.getElementById('qr-title').textContent  = (brand?brand+' ':'')+name;
     document.getElementById('qr-model').textContent  = model||'';
     document.getElementById('qr-idlbl').textContent  = 'ID: '+id+(code?' | Код: '+code:'');
     document.getElementById('qr-img').src = qrSrc;
     document.getElementById('qr-wrap').style.display='block';
+    labelData = {title:(brand?brand+' ':'')+name, model:model||'', id:id, code:code||'', qrSrc:qrSrc};
 
     ['a-code','a-brand','a-name','a-model','a-source','a-address','a-phone','a-price','a-fault'].forEach(function(i){
       document.getElementById(i).value='';
@@ -165,6 +220,7 @@ async function scanDev(){
 }
 
 function renderDetail(dev, cont){
+  labelData = {title:(dev.brand?dev.brand+' ':'')+dev.name, model:dev.model||'', id:dev.id, code:dev.code||'', qrSrc:qrSrcFor(dev.id)};
   var hist = dev.history||[];
   var histHTML='';
   if(hist.length===0){
@@ -228,6 +284,7 @@ function renderDetail(dev, cont){
     +'<p class="section-title">Таъмир тарихи ('+hist.length+' та)</p>'
     +'<div class="card">'+histHTML+'</div>'
     +'<button class="btn btn-primary" onclick="openRepair(\''+dev.id+'\')">+ Таъмир баёни қўшиш</button>'
+    +'<button class="btn" style="background:#1a56db;color:#fff;border-color:#1a56db" onclick="printLabel()">🖨️ Этикетка чиқариш (58×40)</button>'
     +'<div style="display:flex;gap:8px;margin-top:8px">'
     +'<button class="btn btn-edit" onclick="openEdit(\''+dev.id+'\')">✏️ Ўзгартириш</button>'
     +'<button class="btn btn-danger" onclick="deleteDev(\''+dev.id+'\')">🗑️ Ўчириш</button>'
